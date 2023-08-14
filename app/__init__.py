@@ -1,5 +1,5 @@
 #import requests
-from flask import Flask, redirect, request
+from flask import Flask, redirect, request, jsonify
 from config import Config
 def init_app():
     """Crea y configura la aplicación Flask"""
@@ -8,11 +8,20 @@ def init_app():
 
     @app.route('/')
     def bienvenido():
-        return 'Bienvenidx!'
+        return {'message': 'Bienvenidx!'}, 200
 
     @app.route('/info')
     def info():
-        return 'Bienvenido a la aplicacion' + Config.APP_NAME
+        return {'message': f'Bienvenido a la aplicación {Config.APP_NAME}'}, 200
 
+    @app.get('/about')
+    def about():
+        body = {
+            'app_name': Config.APP_NAME,
+            'description': Config.DESCRIPTION,
+            'developers': Config.DEVELOPERS,
+            'version': Config.VERSION
+        }
+        return body, 200
 
     return app
