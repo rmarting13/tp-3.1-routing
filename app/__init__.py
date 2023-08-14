@@ -1,4 +1,4 @@
-import requests
+#import requests
 from flask import Flask, redirect, request
 from config import Config
 def init_app():
@@ -7,7 +7,12 @@ def init_app():
     app.config.from_object(Config)
 
     @app.route('/')
-    def hello_world():
+    def bienvenido():
         return 'Bienvenidx!'
+
+    @app.route('/info')
+    def info():
+        return 'Bienvenido a la aplicacion' + Config.APP_NAME
+
 
     return app
