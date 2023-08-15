@@ -35,6 +35,11 @@ def init_app():
     def endpoint_invalido(e):
         return jsonify(error=str(e)), 404
 
+    @app.route('/sum/<int:num1>/<int:num2>') # Ejercicio 4
+    def suma(num1, num2):
+        sum = num1 + num2
+        return 'el resultado de la suma es: ' + str(sum) 
+
     @app.get('/age/<string:dob>')  # Ejercicio 5
     def calcularEdad(dob):
         try:
@@ -48,6 +53,27 @@ def init_app():
                 abort(400, description="La fecha ingresada supera a la fecha actual.")
         except ValueError:
             abort(400, description="La fecha ingresada tiene un formato ISO 8601 válido.")
+
+    @app.get('/operate/<string:operation>/<int:num1>/<int:num2>') # Ejercicio 6
+    def opera(operation, num1, num2):
+        op = operation
+        try:
+            if op == 'sum':
+                    result = num1 + num2
+            elif op == 'sub':
+                    result = num1 - num2
+            elif op == 'mult':
+                    result = num1 * num2
+            elif op == 'div':
+                result = num1 / num2
+            else:
+                raise ValueError
+            return {'resultado': result}, 200
+        except ZeroDivisionError:
+            abort(400, description='La division por 0 no esta definida.')
+        except ValueError:
+            abort(404, description='No existe una ruta definida para el endpoint proporcionado.')
+
 
     @app.get('/operate')  # Ejercicio 7
     def operar():
