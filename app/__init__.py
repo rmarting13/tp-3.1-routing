@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, abort
+import requests
+from flask import Flask, jsonify, abort, request
 from config import Config
 from datetime import date
 def init_app():
@@ -24,7 +25,7 @@ def init_app():
         }
         return body, 200
 
-    @app.errorhandler(400)  # Maneja el error si se ingresa un parámetro inválido para el ejercicio 5
+    @app.errorhandler(400)  # Maneja errores producidos por peticiones no válidas (bad requests)
     def argumento_invalido(e):
         return jsonify(error=str(e)), 400
 
@@ -41,5 +42,29 @@ def init_app():
                 abort(400, description="La fecha ingresada supera a la fecha actual.")
         except ValueError:
             abort(400, description="La fecha ingresada tiene un formato ISO 8601 válido.")
+
+    @app.get('/operate')  # Ejercicio 7
+    def operar():
+        ops = ['sum', 'sub', 'mult', 'div']
+        try:
+            op = request.args.get('operation', default='')
+            arg1 = request.args.get('num1', default='0')
+            arg2 = request.args.get('num2', default='0')
+            if op in ops:
+                if op == 'sum':
+                    result = int(arg1) + int(arg2)
+                elif op == 'sub':
+                    result = int(arg1) - int(arg2)
+                elif op == 'mult':
+                    result = int(arg1) * int(arg2)
+                else:
+                    result = int(arg1) / int(arg2)
+                return {'resultado': result}, 200
+            else:
+                raise ValueError
+        except ZeroDivisionError:
+            abort(400, description='La división por 0 no está definida.')
+        except ValueError:
+            abort(400, description='No existe una ruta definida para el endpoint proporcionado.')
 
     return app
