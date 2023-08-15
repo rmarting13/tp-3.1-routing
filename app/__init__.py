@@ -1,12 +1,11 @@
 import json
 
 import requests
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, url_for
 from config import Config
 from datetime import date
 
 def init_app():
-    """Crea y configura la aplicación Flask"""
     app = Flask(__name__, static_folder = Config.STATIC_FOLDER, template_folder = Config.TEMPLATE_FOLDER)
     app.config.from_object(Config)
 
@@ -109,5 +108,16 @@ def init_app():
             print(len(cad))
             return {'encoded': cad.strip('+^+')}, 200
 
+    @app.get('/convert/binary/<string:num>')  # Ejercicio 13
+    def convertir(num):
+        bin = int(num)
+        dec = 0
+        pos = 0
+        while bin > 0:
+            bit = bin % 10
+            dec += bit*(2**pos)
+            bin = int(bin/10)
+            pos += 1
+        return {'binary_to_decimal': dec}, 200
 
     return app
