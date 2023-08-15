@@ -29,6 +29,10 @@ def init_app():
     def argumento_invalido(e):
         return jsonify(error=str(e)), 400
 
+    @app.errorhandler(404)  # Maneja errores de rutas no definidas
+    def endpoint_invalido(e):
+        return jsonify(error=str(e)), 404
+
     @app.get('/age/<string:dob>')  # Ejercicio 5
     def calcularEdad(dob):
         try:
@@ -65,6 +69,20 @@ def init_app():
         except ZeroDivisionError:
             abort(400, description='La división por 0 no está definida.')
         except ValueError:
-            abort(400, description='No existe una ruta definida para el endpoint proporcionado.')
+            abort(404, description='No existe una ruta definida para el endpoint proporcionado.')
+
+    @app.get('/formatted/<string:dni>')  # Ejercicio 9
+    def formatear_dni(dni):
+        cad = dni.replace('.', '')
+        cad = cad.replace('-', '')
+        try:
+            if len(str(int(cad))) == 8:
+                return {'formatted_dni': cad}, 200
+            else:
+                abort(400, description='-El formato del dni ingresado no es válido.')
+        except ValueError:
+            abort(400, description='-El dni debe contener sólo caracteres numéricos.')
+
+
 
     return app
