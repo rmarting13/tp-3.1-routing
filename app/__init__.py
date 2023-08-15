@@ -1,7 +1,10 @@
+import json
+
 import requests
 from flask import Flask, jsonify, abort, request
 from config import Config
 from datetime import date
+
 def init_app():
     """Crea y configura la aplicación Flask"""
     app = Flask(__name__, static_folder = Config.STATIC_FOLDER, template_folder = Config.TEMPLATE_FOLDER)
@@ -83,6 +86,28 @@ def init_app():
         except ValueError:
             abort(400, description='-El dni debe contener sólo caracteres numéricos.')
 
+    @app.get('/encode/<string:keyword>')  # Ejercicio 11
+    def encriptar(keyword: str):
+        especiales = {'á': 'a', 'ä': 'a', 'é': 'e', 'ë': 'e', 'í': 'i',
+                      'ï': 'i', 'ó': 'o', 'ö': 'o', 'ú': 'u', 'ü': 'u'}
+        with open('app/static/morse_code.json', 'r') as fo:
+            palabras = list(((keyword.strip()).split('+')))
+            cad = ''
+            morse = json.load(fo)
+            for p in palabras:
+                if p.isalnum():
+                    for l in p:
+                        car = especiales.get(l, l)
+                        cad = cad + morse.get('letters').get(car.upper()) + '+'
+                        if len(cad) == 100:
+                            break
+                    if len(cad) == 100:
+                        break
+                    cad += '^+'
+                else:
+                    abort(400, description='No es posible encriptar caracteres especiales.')
+            print(len(cad))
+            return {'encoded': cad.strip('+^+')}, 200
 
 
     return app
