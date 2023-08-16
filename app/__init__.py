@@ -171,20 +171,21 @@ def init_app():
 
     @app.route('/decode/<string:morse_code>') # Ejercicio 12
     def desencriptar (morse_code: str):
-        morse_code = morse_code.split("^")
         with open('app/static/morse_code.json', 'r') as fo:
+            morse_code = morse_code.split("^")
             cad = ''
             morse = json.load(fo)
             for grupo in morse_code:
                 cod_separado=[]
                 letra = grupo.split("+")
                 cod_separado.extend(letra)
-                cad = cad + " "
+                cad += ' '
                 for i in cod_separado:
-                    for clave, valor in morse.items():
+                    for clave, valor in morse.get('letters').items():
                         if i == valor:
                             cad = cad + clave
-            return cad, 200
+            
+        return {'decoded': cad.strip()}, 200
 
     
     
