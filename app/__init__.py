@@ -99,6 +99,11 @@ def init_app():
         except ValueError:
             abort(404, description='No existe una ruta definida para el endpoint proporcionado.')
 
+    @app.route('/title/<string:word>') # Ejecicio 8
+    def formatear_word(word):
+        palabra = word.capitalize()
+        return { 'formatted_word' : palabra}, 200
+
     @app.get('/formatted/<string:dni>')  # Ejercicio 9
     def formatear_dni(dni):
         cad = dni.replace('.', '')
@@ -111,6 +116,35 @@ def init_app():
         except ValueError:
             abort(400, description='-El dni debe contener sólo caracteres numéricos.')
 
+    @app.route('/format') # Ejercicio 10
+    def procesar():
+        
+        nom = request.args.get('firstname', default = '')
+        ape = request.args.get('lastname', default = '')
+        fecha_nac = request.args.get('dob', default = '0')
+        dni = request.args.get('dni', default = '0')
+        nom = nom.capitalize()
+        ape = ape.capitalize()
+        dni = dni.replace('.', '')
+        dni = dni.replace('-', '')
+        dni = int(dni)
+        if len(str(dni)) != 8 :
+            return {"error": 'DNI no valido'}, 400
+        try:    
+            fecha = date.fromisoformat(fecha_nac)
+            if fecha > date.today():
+                return {'error' : 'fecha de nacimiento invalida'}, 400
+        except ValueError:
+                return {'error' : 'formato de fecha invalida'}, 400
+        edad = (date.today() - fecha).days // 365
+        respuesta = {
+            'nombre' : nom,
+            'apellido' : ape,
+            'edad' : edad,
+            'dni' : dni
+        }
+        return respuesta    
+   
     @app.get('/encode/<string:keyword>')  # Ejercicio 11
     def encriptar(keyword: str):
         especiales = {'á': 'a', 'ä': 'a', 'é': 'e', 'ë': 'e', 'í': 'i',
