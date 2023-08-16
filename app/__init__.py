@@ -168,6 +168,25 @@ def init_app():
             print(len(cad))
             return {'encoded': cad.strip('+^+')}, 200
 
+    @app.route('/decode/<string:morse_code>') # Ejercicio 12
+    def desencriptar (morse_code: str):
+        morse_code = morse_code.split("^")
+        with open('app/static/morse_code.json', 'r') as fo:
+            cad = ''
+            morse = json.load(fo)
+            for grupo in morse_code:
+                cod_separado=[]
+                letra = grupo.split("+")
+                cod_separado.extend(letra)
+                cad = cad + " "
+                for i in cod_separado:
+                    for clave, valor in morse.items():
+                        if i == valor:
+                            cad = cad + clave
+            return cad
+
+    
+    
     @app.get('/convert/binary/<string:num>')  # Ejercicio 13
     def convertir(num):
         bin = int(num)
