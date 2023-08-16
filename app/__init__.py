@@ -4,6 +4,7 @@ import requests
 from flask import Flask, jsonify, abort, request, url_for
 from config import Config
 from datetime import date
+from urllib.parse import quote
 
 def init_app():
     app = Flask(__name__, static_folder = Config.STATIC_FOLDER, template_folder = Config.TEMPLATE_FOLDER)
@@ -183,7 +184,7 @@ def init_app():
                     for clave, valor in morse.items():
                         if i == valor:
                             cad = cad + clave
-            return cad
+            return cad, 200
 
     
     
@@ -198,5 +199,20 @@ def init_app():
             bin = int(bin/10)
             pos += 1
         return {'binary_to_decimal': dec}, 200
+
+    @app.route('/balance/<string:input>')  # Ejercicio 14
+    def balanceado (input):
+        input = quote(input)
+        pila = []
+        simb_apertura = "([{"
+        simb_cierre = ")]}"
+        simb_correspondientes = {")": "(", "}": "{", "]": "["}
+        for simbolo in input:
+            if simbolo in simb_apertura:
+                pila.append(simbolo)
+            elif simbolo in simb_cierre:
+                if not pila or pila[-1] != simb_correspondientes[simbolo]:
+                    return {"balanced" : False}
+        return {"balanced" : True}
 
     return app
