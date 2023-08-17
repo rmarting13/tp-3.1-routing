@@ -1,7 +1,6 @@
 import json
 
-import requests
-from flask import Flask, jsonify, abort, request, url_for
+from flask import Flask, jsonify, abort, request
 from config import Config
 from datetime import date
 
