@@ -4,7 +4,7 @@ import requests
 from flask import Flask, jsonify, abort, request, url_for
 from config import Config
 from datetime import date
-from urllib.parse import quote
+
 
 def init_app():
     app = Flask(__name__, static_folder = Config.STATIC_FOLDER, template_folder = Config.TEMPLATE_FOLDER)
@@ -39,7 +39,7 @@ def init_app():
     @app.route('/sum/<int:num1>/<int:num2>') # Ejercicio 4
     def suma(num1, num2):
         sum = num1 + num2
-        return 'el resultado de la suma es: ' + str(sum) 
+        return {'el resultado de la suma es': sum} , 200
 
     @app.get('/age/<string:dob>')  # Ejercicio 5
     def calcularEdad(dob):
@@ -144,7 +144,7 @@ def init_app():
             'edad' : edad,
             'dni' : dni
         }
-        return respuesta    
+        return respuesta, 200    
    
     @app.get('/encode/<string:keyword>')  # Ejercicio 11
     def encriptar(keyword: str):
@@ -203,7 +203,7 @@ def init_app():
 
     @app.route('/balance/<string:input>')  # Ejercicio 14
     def balanceado (input):
-        input = quote(input)
+
         pila = []
         simb_apertura = "([{"
         simb_cierre = ")]}"
@@ -213,7 +213,11 @@ def init_app():
                 pila.append(simbolo)
             elif simbolo in simb_cierre:
                 if not pila or pila[-1] != simb_correspondientes[simbolo]:
-                    return {"balanced" : False}
-        return {"balanced" : True}
+                    return {"balanced" : False}, 200
+                pila.pop()
+        if len(pila) == 0:
+            return {"balanced" : True}, 200
+        else:
+            return {"balanced" : False}, 200
 
     return app
